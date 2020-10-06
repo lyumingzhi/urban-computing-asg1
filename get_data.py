@@ -40,7 +40,7 @@ class Floor_data(object):
 	def get_data(self):
 		path_data_files=list(Path(path_data_dir).resolve().glob('*.txt'))
 		for path_file in path_data_files:
-			print('loading file',path_data_files)
+			# print('loading file',path_data_files)
 			with open(path_file,'r',encoding='utf-8') as f:
 				path_data=f.readlines()
 			if path_file in self.acce.keys():
@@ -129,3 +129,8 @@ class Floor_data(object):
 			self.wifi[path_file]=np.array(self.wifi[path_file])
 			self.ibeacon[path_file]=np.array(self.ibeacon[path_file])
 			self.waypoint[path_file]=np.array(self.waypoint[path_file])
+		
+		with open(floor_info_filename,'r') as f:
+			floor_info = json.load(f)
+		self.width = floor_info["map_info"]["width"]
+		self.height = floor_info["map_info"]["height"]
