@@ -43,6 +43,7 @@ def read_data_file(data_filename):
         line_data = line_data.split('\t')
 
         if line_data[1] == 'TYPE_ACCELEROMETER':
+            # X axis | Y axis | Z axis | accuracy
             acce.append([int(line_data[0]), float(line_data[2]), float(line_data[3]), float(line_data[4])])
             continue
 
@@ -67,6 +68,8 @@ def read_data_file(data_filename):
             continue
 
         if line_data[1] == 'TYPE_ROTATION_VECTOR':
+            # X axis | Y axis | Z axis | accuracy
+            # 3-5 : SensorEvent.values[0-2]
             ahrs.append([int(line_data[0]), float(line_data[2]), float(line_data[3]), float(line_data[4])])
             continue
 
@@ -108,9 +111,16 @@ def read_data_file(data_filename):
                     magn_uncali, ahrs, wifi, ibeacon, waypoint)
 
 
-def calibrate_magnetic_wifi_ibeacon_to_position(path_file_list):
-    mwi_datas = {}
+def read_data_files(path_file_list):
+    file_data_map = {}
     for path_filename in path_file_list:
+        file_data_map[path_filename] = read_data_file(path_filename)
+    return file_data_map
+
+
+def calibrate_magnetic_wifi_ibeacon_to_position(file_data_map):
+    mwi_datas = {}
+    for path_filename, path_datas in file_data_map.items():
         print('Processing {}...'.format(path_filename))
 
         path_datas = read_data_file(path_filename)
@@ -660,7 +670,9 @@ def compute_rel_positions(stride_lengths, step_headings):
 
 
 def compute_step_positions(acce_datas, ahrs_datas, posi_datas):
+    # Get steps
     step_timestamps, step_indexs, step_acce_max_mins = compute_steps(acce_datas)
+    # Heading
     headings = compute_headings(ahrs_datas)
     stride_lengths = compute_stride_length(step_acce_max_mins)
     step_headings = compute_step_heading(step_timestamps, headings)

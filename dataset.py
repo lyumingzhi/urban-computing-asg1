@@ -2,6 +2,8 @@ import glob
 import os
 import numpy as np
 import json
+import matplotlib.pyplot as plt
+import logging
 
 from utils import *
 
@@ -9,7 +11,8 @@ from utils import *
 class FloorData(object):
   """Class represents one floor.
   """
-  def __init__(self, output_path, path='./data/site1/B1'):
+  def __init__(self, output_path, path='./data/site1/B1',
+               logger=logging):
     if not os.path.isdir(output_path):
       os.makedirs(output_path)
     self.path = path
@@ -25,8 +28,10 @@ class FloorData(object):
 
   def parse_date(self):
     path_filenames = glob.glob(os.path.join(self.path_data_dir, "*.txt"))
-    mwi_datas = calibrate_magnetic_wifi_ibeacon_to_position(path_filenames)
-    self.data = mwi_datas
+    # Raw data, used to plot positions
+    self.raw_data = read_data_files(path_filenames)
+    # Calibrated data, used to draw magnetic, wifi, etc.
+    self.data = calibrate_magnetic_wifi_ibeacon_to_position(self.raw_data)
 
   def draw_magnetic(self):
     if not hasattr(self, 'data'):
@@ -43,8 +48,22 @@ class FloorData(object):
         self.output_path, 'magnetic_strength.html'))
     save_figure_to_html(fig, html_filename)
 
+  def draw_way_points(self):
+    fig, ax = plt.subplots()
+    waypoint = []
+
+    for filename, path_data in self.raw_data.items():
+      waypoint.append(path_data.waypoint[:, 1:3])
+    for wp in waypoint:
+      ax.scatter(wp[:, 0], wp[:, 1], linewidths=0.5)
+
+    im = plt.imread(self.floor_plan_filename)
+    ax.imshow(im, extent=[0, self.width_meter, 0, self.height_meter])
+    plt.show()
+
 
 if __name__ == '__main__':
   floor = FloorData('./output/site1/B1', './data/site1/B1')
   floor.parse_date()
-  floor.draw_magnetic()
+  # floor.draw_magnetic()
+  floor.draw_way_points()
