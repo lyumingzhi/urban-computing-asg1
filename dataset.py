@@ -25,15 +25,23 @@ class FloorData(object):
 
     self.width_meter = self.floor_info["map_info"]["width"]
     self.height_meter = self.floor_info["map_info"]["height"]
+    self.logger = logger
 
   def parse_date(self):
+    self.logger.info("Parse data from %s" % self.path)
     path_filenames = glob.glob(os.path.join(self.path_data_dir, "*.txt"))
     # Raw data, used to plot positions
     self.raw_data = read_data_files(path_filenames)
     # Calibrated data, used to draw magnetic, wifi, etc.
     self.data = calibrate_magnetic_wifi_ibeacon_to_position(self.raw_data)
 
-  def draw_magnetic(self):
+  def save_figure(self, fig, name):
+    filename = os.path.abspath(os.path.join(
+      self.output_path, name))
+    # fig.set_size_inches(18.5, 10.5)
+    fig.savefig(filename, dpi=500, quality=30)
+
+  def draw_magnetic(self, show=False):
     if not hasattr(self, 'data'):
       self.parse_date()
 
@@ -43,12 +51,14 @@ class FloorData(object):
     fig = visualize_heatmap(heat_positions, heat_values, 
                             self.floor_plan_filename, self.width_meter,
                             self.height_meter, colorbar_title='mu tesla',
-                            title='Magnetic Strength', show=True)
-    html_filename = os.path.abspath(os.path.join(
-        self.output_path, 'magnetic_strength.html'))
-    save_figure_to_html(fig, html_filename)
+                            title='Magnetic Strength', show=show)
+    self.save_figure(fig, 'Magnetic.jpg')
+    # html_filename = os.path.abspath(os.path.join(
+    #     self.output_path, 'magnetic_strength.html'))
+    # save_figure_to_html(fig, html_filename)
 
-  def draw_way_points(self):
+
+  def draw_way_points(self, show=False):
     fig, ax = plt.subplots()
     waypoint = []
 
@@ -59,11 +69,13 @@ class FloorData(object):
 
     im = plt.imread(self.floor_plan_filename)
     ax.imshow(im, extent=[0, self.width_meter, 0, self.height_meter])
-    plt.show()
+    if show:
+      plt.show()
+    self.save_figure(fig, 'WayPoints.jpg')
 
 
 if __name__ == '__main__':
   floor = FloorData('./output/site1/B1', './data/site1/B1')
   floor.parse_date()
-  # floor.draw_magnetic()
+  floor.draw_magnetic()
   floor.draw_way_points()

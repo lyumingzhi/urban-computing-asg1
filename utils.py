@@ -4,6 +4,7 @@ import scipy.signal as signal
 from codecs import open
 import plotly.graph_objs as go
 from PIL import Image
+import matplotlib.pyplot as plt
 
 
 ReadData = namedtuple('ReadData', [
@@ -121,9 +122,7 @@ def read_data_files(path_file_list):
 def calibrate_magnetic_wifi_ibeacon_to_position(file_data_map):
     mwi_datas = {}
     for path_filename, path_datas in file_data_map.items():
-        print('Processing {}...'.format(path_filename))
-
-        path_datas = read_data_file(path_filename)
+        # print('Processing {}...'.format(path_filename))
         acce_datas = path_datas.acce
         magn_datas = path_datas.magn
         ahrs_datas = path_datas.ahrs
@@ -265,55 +264,39 @@ def extract_wifi_count(mwi_datas):
     return wifi_counts
 
 
-def visualize_heatmap(position, value, floor_plan_filename, width_meter, height_meter, colorbar_title="colorbar", title=None, show=False):
-    fig = go.Figure()
+def visualize_heatmap(position, value, floor_plan_filename,
+                      width_meter, height_meter,
+                      colorbar_title="colorbar", title=None, show=False):
+    """Visualize heatmap.
 
-    # add heat map
-    fig.add_trace(
-        go.Scatter(x=position[:, 0],
-                   y=position[:, 1],
-                   mode='markers',
-                   marker=dict(size=7,
-                               color=value,
-                               colorbar=dict(title=colorbar_title),
-                               colorscale="Rainbow"),
-                   text=value,
-                   name=title))
-
-    # add floor plan
+    Parameters
+    ----------
+    position : np.ndarray
+        (N, 2)
+    value : np.ndarray
+        (N, 2)
+    floor_plan_filename : str
+        File path of floor plan image
+    width_meter : int
+        width of position
+    height_meter : int
+        height of position
+    colorbar_title : str
+    
+    Returns
+    -------
+    Figure
+    """
+    fig, ax = plt.subplots()
     floor_plan = Image.open(floor_plan_filename)
-    fig.update_layout(images=[
-        go.layout.Image(
-            source=floor_plan,
-            xref="x",
-            yref="y",
-            x=0,
-            y=height_meter,
-            sizex=width_meter,
-            sizey=height_meter,
-            sizing="contain",
-            opacity=1,
-            layer="below",
-        )
-    ])
-
-    # configure
-    fig.update_xaxes(autorange=False, range=[0, width_meter])
-    fig.update_yaxes(autorange=False, range=[0, height_meter], scaleanchor="x", scaleratio=1)
-    fig.update_layout(
-        title=go.layout.Title(
-            text=title or "No title.",
-            xref="paper",
-            x=0,
-        ),
-        autosize=True,
-        width=900,
-        height=200 + 900 * height_meter / width_meter,
-        template="plotly_white",
-    )
-
+    if title is not None:
+        ax.set_title(title)
+    p_im = ax.scatter(position[:, 0], position[:, 1],
+                      c=value, cmap='rainbow', linewidths=0.1)
+    fig.colorbar(p_im).set_label(colorbar_title)
+    ax.imshow(floor_plan, extent=[0, width_meter, 0, height_meter])
     if show:
-        fig.show()
+        plt.show()
 
     return fig
 
