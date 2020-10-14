@@ -169,7 +169,7 @@ def calibrate_magnetic_wifi_ibeacon_to_position(file_data_map):
         magn_datas_list = split_ts_seq(magn_datas, sep_tss)
         for magn_ds in magn_datas_list:
             diff = np.abs(step_positions[:, 0] - float(magn_ds[0, 0]))
-            index = np.argmin(diff)
+            index = np.argmin(diff)# get the magn strength whose timestamp is near the magn_ds's
             target_xy_key = tuple(step_positions[index, 1:3])
             if target_xy_key in mwi_datas:
                 mwi_datas[target_xy_key]['magnetic'] = np.append(mwi_datas[target_xy_key]['magnetic'], magn_ds, axis=0)
@@ -200,7 +200,7 @@ def extract_wifi_rssi(mwi_datas):
     for position_key in mwi_datas:
         # print(f'Position: {position_key}')
 
-        wifi_data = mwi_datas[position_key]['wifi']
+        wifi_data = mwi_datas[position_key]['wifi'] #list
         for wifi_d in wifi_data:
             bssid = wifi_d[2]
             rssi = int(wifi_d[3])
@@ -210,7 +210,7 @@ def extract_wifi_rssi(mwi_datas):
                 if position_key in position_rssi:
                     old_rssi = position_rssi[position_key][0]
                     old_count = position_rssi[position_key][1]
-                    position_rssi[position_key][0] = (old_rssi * old_count + rssi) / (old_count + 1)
+                    position_rssi[position_key][0] = (old_rssi * old_count + rssi) / (old_count + 1)# get the mean value of rssi
                     position_rssi[position_key][1] = old_count + 1
                 else:
                     position_rssi[position_key] = np.array([rssi, 1])
