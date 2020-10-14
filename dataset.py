@@ -53,10 +53,6 @@ class FloorData(object):
                             self.height_meter, colorbar_title='mu tesla',
                             title='Magnetic Strength', show=show)
     self.save_figure(fig, 'Magnetic.jpg')
-    # html_filename = os.path.abspath(os.path.join(
-    #     self.output_path, 'magnetic_strength.html'))
-    # save_figure_to_html(fig, html_filename)
-
 
   def draw_way_points(self, show=False):
     fig, ax = plt.subplots()

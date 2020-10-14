@@ -2,7 +2,6 @@ from collections import namedtuple
 import numpy as np
 import scipy.signal as signal
 from codecs import open
-import plotly.graph_objs as go
 from PIL import Image
 import matplotlib.pyplot as plt
 
