@@ -2,6 +2,7 @@ import glob
 import json
 import logging
 import os
+import random
 
 import torch
 
@@ -166,7 +167,18 @@ class FloorData(object):
             plt.show()
         self.save_figure(fig, 'WayPoints.jpg')
 
-        # def create_example(self):
+    def draw_wifi_rssi(self, show=False):
+        wifi_rssi = extract_wifi_rssi(self.data)
+        wifi_bssids = list(wifi_rssi.keys())
+        target_wifi_list = random.sample(wifi_bssids, k=3)
+        for target_wifi in target_wifi_list:
+            heat_positions = np.array(list(wifi_rssi[target_wifi].keys()))
+            heat_values = np.array(list(wifi_rssi[target_wifi].values()))[:, 0]
+            fig = visualize_heatmap(heat_positions, heat_values, self.floor_plan_filename, self.width_meter,
+                                    self.height_meter,
+                                    colorbar_title='dBm', title=f'Wifi: {target_wifi} RSSI', show=show)
+            self.save_figure(fig, f'Wifi_RSSI_{target_wifi.replace(":", "-")}.jpg')
+
 
     def __len__(self):
         return len(list(self.data.keys()))
