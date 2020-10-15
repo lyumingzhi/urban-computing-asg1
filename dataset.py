@@ -1,5 +1,7 @@
 import glob
 import os
+import random
+
 import numpy as np
 import json
 import matplotlib.pyplot as plt
@@ -82,7 +84,7 @@ class FloorData(object):
 
     def draw_magnetic(self, show=False):
         if not hasattr(self, 'data'):
-            self.parse_date()
+            self.parse_data()
 
         magnetic_strength = extract_magnetic_strength(self.data)
         heat_positions = np.array(list(magnetic_strength.keys()))
@@ -108,18 +110,30 @@ class FloorData(object):
             plt.show()
         self.save_figure(fig, 'WayPoints.jpg')
 
-        # def create_example(self):
+    def draw_wifi_rssi(self, show=False):
+        wifi_rssi = extract_wifi_rssi(self.data)
+        wifi_bssids = list(wifi_rssi.keys())
+        target_wifi_list = random.sample(wifi_bssids, k=3)
+        for target_wifi in target_wifi_list:
+            heat_positions = np.array(list(wifi_rssi[target_wifi].keys()))
+            heat_values = np.array(list(wifi_rssi[target_wifi].values()))[:, 0]
+            fig = visualize_heatmap(heat_positions, heat_values, self.floor_plan_filename, self.width_meter,
+                                    self.height_meter,
+                                    colorbar_title='dBm', title=f'Wifi: {target_wifi} RSSI', show=show)
+            self.save_figure(fig, f'Wifi_RSSI_{target_wifi.replace(":", "-")}.jpg')
 
-        def __len__(self):
-            return len(list(self.data.keys()))
+    # def create_example(self):
 
-        def __getitem__(self, index):
-            return self.example[list(example.keys())[index]], self.gt[index]
+    def __len__(self):
+        return len(list(self.data.keys()))
 
-        def collat_fn(self, batch):
-            examples, gts = batch[0], batch[1]
-            examples = torch.Tensor(examples).view(len(batch), -1)
-            gts = torch.Tensor(gts)
+    def __getitem__(self, index):
+        return self.example[list(self.example.keys())[index]], self.gt[index]
+
+    def collate_fn(self, batch):
+        examples, gts = batch[0], batch[1]
+        examples = torch.Tensor(examples).view(len(batch), -1)
+        gts = torch.Tensor(gts)
 
 
 if __name__ == '__main__':
@@ -127,3 +141,4 @@ if __name__ == '__main__':
     floor.parse_data()
     floor.draw_magnetic()
     floor.draw_way_points()
+    floor.draw_wifi_rssi()

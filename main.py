@@ -37,9 +37,13 @@ def train(network, train_dataset):
 
 def main():
     dataset = FloorData('./output/site1/B1', './data/site1/B1')
-    # floor.parse_date()
-    # floor.draw_magnetic()
-    # floor.draw_way_points()
+    # dataset.parse_data()
+    # dataset.draw_magnetic()
+    # dataset.draw_way_points()
 
     net = MLP(dataset.example[list(dataset.example.keys())[0]].shape[1], 128, 128, dataset.gt.shape[1])
     train(net, dataset)
+
+
+if __name__ == '__main__':
+    main()
