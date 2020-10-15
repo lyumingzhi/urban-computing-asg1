@@ -20,6 +20,7 @@ def train(network,train_dataset):
         batch_size=10,
         collate_fn=train_dataset.collate_fn)
     optimizer=torch.optim.SGD(network.parameters(),lr=0.01)
+    scheduler = torch.optim.lr_scheduler.StepLR(optimizer, step_size=5, gamma=0.1)
     criterion=torch.nn.MSELoss()
     # exit()
     for epoch in range(10):
@@ -33,6 +34,7 @@ def train(network,train_dataset):
             loss=criterion(preds,label)
             loss.backward()
             optimizer.step()
+        scheduler.step()
         print('loss:',loss.item())
 
 def main():
@@ -42,7 +44,8 @@ def main():
     # floor.draw_way_points()
     # print(dataset.example[list(dataset.example.keys())[0]].shape,dataset.gt.shape[1])
     # print(dataset.gt)
-    net=MLP(dataset.example[list(dataset.example.keys())[0]].shape[0],128,128,dataset.gt.shape[1])
+    net=MLP(dataset.example[list(dataset.example.keys())[0]].shape[0],
+            128, 128, dataset.gt.shape[1])
     train(net,dataset)
 main()
     

@@ -171,16 +171,18 @@ class FloorData(object):
 
   def __len__(self):
     return len(list(self.data.keys()))
+
   def __getitem__(self,index):
-    return self.example[list(self.example.keys())[index]],self.gt[index]
-  def collate_fn(self,batch):
-    examples=[ins[0] for ins in batch]
-    gts=[ins[1] for ins in batch]
-    # examples,gts=batch[0],batch[1]
-    print(batch)
-    examples=torch.Tensor(examples).view(len(batch),-1)
-    gts=torch.Tensor(gts)
-    return examples,gts
+    key = self.gt[index]
+    return self.example[key], key
+    # return self.example[list(self.example.keys())[index]],self.gt[index]
+
+  def collate_fn(self, batch):
+    examples = [ins[0] for ins in batch]
+    gts = [ins[1] for ins in batch]
+    examples = torch.Tensor(examples).view(len(batch), -1)
+    gts = torch.Tensor(gts)
+    return examples, gts
 
 if __name__ == '__main__':
   floor = FloorData('./output/site1/B1', './data/site1/B1')
