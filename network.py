@@ -13,5 +13,5 @@ class MLP(nn.Module):
 		x=self.layer2(x)
 		x=F.relu(x)
 		y=self.layer3(x)
-		y=F.relue(y)
+		y=F.relu(y)
 		return y

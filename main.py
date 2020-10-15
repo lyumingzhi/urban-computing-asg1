@@ -25,10 +25,10 @@ def train(network,train_dataset):
     for epoch in range(10):
         epoch_iterator=tqdm(train_data_loader,desc='Interation',disable=False)
         for step, batch in enumerate(epoch_iterator):
-            net.train()
+            network.train()
             example,label=batch[0],batch[1]
             example.requires_grad_()
-            preds=net(example)
+            preds=network(example)
             optimizer.zero_grad()
             loss=criterion(preds,label)
             loss.backward()

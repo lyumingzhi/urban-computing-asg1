@@ -4,7 +4,7 @@ import scipy.signal as signal
 from codecs import open
 from PIL import Image
 import matplotlib.pyplot as plt
-
+# export PYTHONIOENCODING=utf-8
 ReadData = namedtuple('ReadData', [
     'acce',
     'acce_uncali',
@@ -147,7 +147,11 @@ def calibrate_magnetic_wifi_ibeacon_to_position(file_data_map):
                         'wifi': wifi_ds,
                         'ibeacon': np.zeros((0, 3))
                     }
-
+                    # mwi_datas[target_xy_key] = {
+                    #     'magnetic': np.zeros((1, 4)),
+                    #     'wifi': wifi_ds,
+                    #     'ibeacon': np.zeros((1, 3))
+                    # }
         if ibeacon_datas.size != 0:
             sep_tss = np.unique(ibeacon_datas[:, 0].astype(float))
             ibeacon_datas_list = split_ts_seq(ibeacon_datas, sep_tss)
@@ -163,7 +167,13 @@ def calibrate_magnetic_wifi_ibeacon_to_position(file_data_map):
                         'wifi': np.zeros((0, 5)),
                         'ibeacon': ibeacon_ds
                     }
-
+                    # print(ibeacon_ds)
+                    # exit()
+                    # mwi_datas[target_xy_key] = {
+                    #     'magnetic': np.zeros((1, 4)),
+                    #     'wifi': np.zeros((1, 5)),
+                    #     'ibeacon': ibeacon_ds
+                    # }
         sep_tss = np.unique(magn_datas[:, 0].astype(float))
         magn_datas_list = split_ts_seq(magn_datas, sep_tss)
         for magn_ds in magn_datas_list:
@@ -178,6 +188,13 @@ def calibrate_magnetic_wifi_ibeacon_to_position(file_data_map):
                     'wifi': np.zeros((0, 5)),
                     'ibeacon': np.zeros((0, 3))
                 }
+                # print(magn_ds)
+                # exit()
+                # mwi_datas[target_xy_key] = {
+                #     'magnetic': magn_ds,
+                #     'wifi': np.zeros((1, 5)),
+                #     'ibeacon': np.zeros((1, 3))
+                # }
 
     return mwi_datas
 
@@ -202,8 +219,8 @@ def extract_wifi_rssi(mwi_datas):
 
         wifi_data = mwi_datas[position_key]['wifi'] #list
         # position_key=str(position_key)
-        print(wifi_data)
-        exit()
+        # print(np.array(mwi_datas[position_key]['wifi']))
+        # exit()
         for wifi_d in wifi_data:
             bssid = wifi_d[2]
             rssi = int(wifi_d[3])
