@@ -184,9 +184,7 @@ class FloorData(object):
         return len(list(self.data.keys()))
 
     def __getitem__(self, index):
-        key = self.gt[index]
-        return self.example[key], key
-        # return self.example[list(self.example.keys())[index]],self.gt[index]
+        return self.example[list(self.example.keys())[index]],self.gt[index]
 
     def collate_fn(self, batch):
         examples = [ins[0] for ins in batch]
