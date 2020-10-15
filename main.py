@@ -19,10 +19,11 @@ def train(network,train_dataset):
         sampler=sampler,
         batch_size=10,
         collate_fn=train_dataset.collate_fn)
-    optimizer=torch.optim.SDG(network.parameters(),lr=0.01)
+    optimizer=torch.optim.SGD(network.parameters(),lr=0.01)
     criterion=torch.nn.MSELoss()
+    # exit()
     for epoch in range(10):
-        epoch_iterator=tqdm(train_data_loader,dec='Interation',disable=False)
+        epoch_iterator=tqdm(train_data_loader,desc='Interation',disable=False)
         for step, batch in enumerate(epoch_iterator):
             net.train()
             example,label=batch[0],batch[1]
@@ -32,13 +33,16 @@ def train(network,train_dataset):
             loss=criterion(preds,label)
             loss.backward()
             optimizer.step()
-            
+        print('loss:',loss.item())
+
 def main():
     dataset = FloorData('./output/site1/B1', './data/site1/B1')
     # floor.parse_date()
     # floor.draw_magnetic()
     # floor.draw_way_points()
-
-    net=MLP(dataset.example[list(dataset.example.keys())[0]].shape[1],128,128,dataset.gt.shape[1])
+    # print(dataset.example[list(dataset.example.keys())[0]].shape,dataset.gt.shape[1])
+    # print(dataset.gt)
+    net=MLP(dataset.example[list(dataset.example.keys())[0]].shape[0],128,128,dataset.gt.shape[1])
     train(net,dataset)
+main()
     

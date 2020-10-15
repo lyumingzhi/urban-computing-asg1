@@ -5,7 +5,6 @@ from codecs import open
 from PIL import Image
 import matplotlib.pyplot as plt
 
-
 ReadData = namedtuple('ReadData', [
     'acce',
     'acce_uncali',
@@ -189,6 +188,7 @@ def extract_magnetic_strength(mwi_datas):
         # print(f'Position: {position_key}')
 
         magnetic_data = mwi_datas[position_key]['magnetic']
+        # position_key=str(position_key)
         magnetic_s = np.mean(np.sqrt(np.sum(magnetic_data[:, 1:4] ** 2, axis=1)))
         magnetic_strength[position_key] = magnetic_s
 
@@ -201,6 +201,9 @@ def extract_wifi_rssi(mwi_datas):
         # print(f'Position: {position_key}')
 
         wifi_data = mwi_datas[position_key]['wifi'] #list
+        # position_key=str(position_key)
+        print(wifi_data)
+        exit()
         for wifi_d in wifi_data:
             bssid = wifi_d[2]
             rssi = int(wifi_d[3])
@@ -229,6 +232,7 @@ def extract_ibeacon_rssi(mwi_datas):
         # print(f'Position: {position_key}')
 
         ibeacon_data = mwi_datas[position_key]['ibeacon']
+        # position_key=str(position_key)
         for ibeacon_d in ibeacon_data:
             ummid = ibeacon_d[1]
             rssi = int(ibeacon_d[2])
@@ -247,6 +251,7 @@ def extract_ibeacon_rssi(mwi_datas):
                 position_rssi[position_key] = np.array([rssi, 1])
 
             ibeacon_rssi[ummid] = position_rssi
+
 
     return ibeacon_rssi
 
