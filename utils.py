@@ -4,6 +4,7 @@ import scipy.signal as signal
 from codecs import open
 from PIL import Image
 import matplotlib.pyplot as plt
+
 # export PYTHONIOENCODING=utf-8
 ReadData = namedtuple('ReadData', [
     'acce',
@@ -160,7 +161,8 @@ def calibrate_magnetic_wifi_ibeacon_to_position(file_data_map):
                 index = np.argmin(diff)
                 target_xy_key = tuple(step_positions[index, 1:3])
                 if target_xy_key in mwi_datas:
-                    mwi_datas[target_xy_key]['ibeacon'] = np.append(mwi_datas[target_xy_key]['ibeacon'], ibeacon_ds, axis=0)
+                    mwi_datas[target_xy_key]['ibeacon'] = np.append(mwi_datas[target_xy_key]['ibeacon'], ibeacon_ds,
+                                                                    axis=0)
                 else:
                     mwi_datas[target_xy_key] = {
                         'magnetic': np.zeros((0, 4)),
@@ -178,7 +180,7 @@ def calibrate_magnetic_wifi_ibeacon_to_position(file_data_map):
         magn_datas_list = split_ts_seq(magn_datas, sep_tss)
         for magn_ds in magn_datas_list:
             diff = np.abs(step_positions[:, 0] - float(magn_ds[0, 0]))
-            index = np.argmin(diff)# get the magn strength whose timestamp is near the magn_ds's
+            index = np.argmin(diff)  # get the magn strength whose timestamp is near the magn_ds's
             target_xy_key = tuple(step_positions[index, 1:3])
             if target_xy_key in mwi_datas:
                 mwi_datas[target_xy_key]['magnetic'] = np.append(mwi_datas[target_xy_key]['magnetic'], magn_ds, axis=0)
@@ -217,7 +219,7 @@ def extract_wifi_rssi(mwi_datas):
     for position_key in mwi_datas:
         # print(f'Position: {position_key}')
 
-        wifi_data = mwi_datas[position_key]['wifi'] #list
+        wifi_data = mwi_datas[position_key]['wifi']  # list
         # position_key=str(position_key)
         # print(np.array(mwi_datas[position_key]['wifi']))
         # exit()
@@ -230,7 +232,8 @@ def extract_wifi_rssi(mwi_datas):
                 if position_key in position_rssi:
                     old_rssi = position_rssi[position_key][0]
                     old_count = position_rssi[position_key][1]
-                    position_rssi[position_key][0] = (old_rssi * old_count + rssi) / (old_count + 1)# get the mean value of rssi
+                    position_rssi[position_key][0] = (old_rssi * old_count + rssi) / (
+                                old_count + 1)  # get the mean value of rssi
                     position_rssi[position_key][1] = old_count + 1
                 else:
                     position_rssi[position_key] = np.array([rssi, 1])
@@ -268,7 +271,6 @@ def extract_ibeacon_rssi(mwi_datas):
                 position_rssi[position_key] = np.array([rssi, 1])
 
             ibeacon_rssi[ummid] = position_rssi
-
 
     return ibeacon_rssi
 
@@ -324,6 +326,7 @@ def visualize_heatmap(position, value, floor_plan_filename,
 
 def save_figure_to_html(fig, filename):
     fig.write_html(filename)
+
 
 def split_ts_seq(ts_seq, sep_ts):
     """
@@ -410,7 +413,7 @@ def correct_positions(rel_positions, reference_positions):
         # abs_ps[:, 1:3] = rel_ps[:, 1:3] + start_position[1:3]
         abs_ps[0, 1:3] = rel_ps[0, 1:3] + start_position[1:3]
         for j in range(1, rel_ps.shape[0]):
-            abs_ps[j, 1:3] = abs_ps[j-1, 1:3] + rel_ps[j, 1:3]
+            abs_ps[j, 1:3] = abs_ps[j - 1, 1:3] + rel_ps[j, 1:3]
         abs_ps = np.insert(abs_ps, 0, start_position, axis=0)
         corrected_xys = correct_trajectory(abs_ps[:, 1:3], end_position[1:3])
         corrected_ps = np.column_stack((abs_ps[:, 0], corrected_xys))
@@ -442,7 +445,7 @@ def get_rotation_matrix_from_vector(rotation_vector):
     if rotation_vector.size >= 4:
         q0 = rotation_vector[3]
     else:
-        q0 = 1 - q1*q1 - q2*q2 - q3*q3
+        q0 = 1 - q1 * q1 - q2 * q2 - q3 * q3
         if q0 > 0:
             q0 = np.sqrt(q0)
         else:
@@ -610,10 +613,10 @@ def compute_stride_length(step_acce_max_mins):
 
     stride_lengths = np.zeros((step_acce_max_mins.shape[0], 2))
     k_real = np.zeros((step_acce_max_mins.shape[0], 2))
-    step_timeperiod = np.zeros((step_acce_max_mins.shape[0] - 1, ))
+    step_timeperiod = np.zeros((step_acce_max_mins.shape[0] - 1,))
     stride_lengths[:, 0] = step_acce_max_mins[:, 0]
     window_size = 2
-    step_timeperiod_temp = np.zeros((0, ))
+    step_timeperiod_temp = np.zeros((0,))
 
     # calculate every step period - step_timeperiod unit: second
     for i in range(0, step_timeperiod.shape[0]):
@@ -627,12 +630,13 @@ def compute_stride_length(step_acce_max_mins):
     k_real[:, 0] = step_acce_max_mins[:, 0]
     k_real[0, 1] = K
     for i in range(0, step_timeperiod.shape[0]):
-        k_real[i + 1, 1] = np.max([(para_a0 + para_a1 / step_timeperiod[i] + para_a2 * step_acce_max_mins[i, 3]), K_min])
+        k_real[i + 1, 1] = np.max(
+            [(para_a0 + para_a1 / step_timeperiod[i] + para_a2 * step_acce_max_mins[i, 3]), K_min])
         k_real[i + 1, 1] = np.min([k_real[i + 1, 1], K_max]) * (K / K_min)
 
     # calculate every stride length by parameters and max and min data of acceleration magnitude
     stride_lengths[:, 1] = np.max([(step_acce_max_mins[:, 1] - step_acce_max_mins[:, 2]),
-                                   np.ones((step_acce_max_mins.shape[0], ))], axis=0)**(1 / 4) * k_real[:, 1]
+                                   np.ones((step_acce_max_mins.shape[0],))], axis=0) ** (1 / 4) * k_real[:, 1]
 
     return stride_lengths
 
