@@ -141,7 +141,7 @@ class FloorData(object):
 
     def draw_magnetic(self, show=False):
         if not hasattr(self, 'data'):
-            self.parse_date()
+            self.parse_data()
 
         magnetic_strength = extract_magnetic_strength(self.data)
         heat_positions = np.array(list(magnetic_strength.keys()))
@@ -199,3 +199,4 @@ if __name__ == '__main__':
 #   floor.parse_data()
 #   floor.draw_magnetic()
 #   floor.draw_way_points()
+#   floor.draw_wifi_rssi()
