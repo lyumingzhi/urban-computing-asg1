@@ -98,20 +98,19 @@ def evaluate(network, test_dataset):
 def visualize(labels, losses, dataset, show=False):
     for idx, val in enumerate(labels):
         labels[idx] = np.array([val[0] * dataset.width_meter, val[1] * dataset.height_meter])
-    print(labels)
-    print(losses)
     fig = visualize_heatmap(labels, losses,
                             dataset.floor_plan_filename, dataset.width_meter,
                             dataset.height_meter, colorbar_title='MSE Loss',
-                            title='Prediction Result', show=show)
+                            title='DL-based Localization Error Map', show=show)
     dataset.save_figure(fig, 'output_visualize.jpg')
 
 
 def main():
     dataset = FloorData('./output/site1/B1', './data/site1/B1', shuffle=False)
-    # floor.parse_date()
-    # floor.draw_magnetic()
-    # floor.draw_way_points()
+    # dataset.parse_data()
+    dataset.draw_magnetic()
+    dataset.draw_way_points()
+    dataset.draw_wifi_rssi()
     # print(dataset.example[list(dataset.example.keys())[0]].shape, dataset.gt.shape)
     # print(dataset.gt)
 
@@ -126,5 +125,5 @@ def main():
     visualize(labels, losses, dataset)
 
 
-
-main()
+if __name__ == '__main__':
+    main()
