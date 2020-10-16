@@ -6,6 +6,7 @@ import random
 from collections import OrderedDict
 
 import torch
+from torch.utils.data import Dataset
 
 from utils import *
 
@@ -15,7 +16,8 @@ class FloorData(object):
     """
 
     def __init__(self, output_path, path='./data/site1/B1',
-                 logger=logging):
+                 logger=logging, shuffle=True):
+        self.shuffle = shuffle
         if not os.path.isdir(output_path):
             os.makedirs(output_path)
         self.path = path
@@ -79,7 +81,23 @@ class FloorData(object):
         self.gt[:, 0] = self.gt[:, 0] / self.width_meter
         self.gt[:, 1] = self.gt[:, 1] / self.height_meter
         self.feature = (self.feature - self.feature_min) / (self.feature_max - self.feature_min)
+        self.feature_length = self.feature.shape[1]
+        self.output_length = self.gt.shape[1]
+        self.index = np.arange(self.feature.shape[0])
+        if self.shuffle:
+            np.random.shuffle(self.index)
+        self.train_ratio = 0.8
+    
+    def __len__(self):
+        return len(self.index)
 
+    def get_train(self):
+        idx = self.index[:int(len(self) * self.train_ratio)]
+        return self.feature[idx, ...], self.gt[idx, ...]
+
+    def get_test(self):
+        idx = self.index[int(len(self) * self.train_ratio):]
+        return self.feature[idx, ...], self.gt[idx, ...]
 
     def save_figure(self, fig, name):
         filename = os.path.abspath(os.path.join(
@@ -127,18 +145,40 @@ class FloorData(object):
             self.save_figure(fig, f'Wifi_RSSI_{target_wifi.replace(":", "-")}.jpg')
 
 
+class UrbanDataset(Dataset):
+    def __init__(self, ds, is_training=True, shuffle=True):
+        self.ds = ds
+        if is_training:
+            self.feature, self.label = self.ds.get_train()
+        else:
+            self.feature, self.label = self.ds.get_test()
+        def _map(array):
+            if not isinstance(array, torch.Tensor):
+                array = torch.from_numpy(array).float()
+            return array
+        self.feature = _map(self.feature)
+        self.label = _map(self.label)
+        self.index = np.arange(len(self))
+        if shuffle:
+            np.random.shuffle(self.index)
+    
+    def pin_memory(self):
+        self.feature = self.feature.pin_memory()
+        self.label = self.label.pin_memory()
+
     def __len__(self):
-        return len(list(self.data.keys()))
+        return self.feature.shape[0]
 
     def __getitem__(self, index):
-        return self.feature[index], self.gt[index]
+        idx = self.index[index]
+        return self.feature[idx, ...], self.label[idx, ...]
 
-    def collate_fn(self, batch):
-        examples = [ins[0] for ins in batch]
-        gts = [ins[1] for ins in batch]
-        examples = torch.Tensor(examples).view(len(batch), -1)
-        gts = torch.Tensor(gts)
-        return examples, gts
+    # def collate_fn(self, batch):
+    #     examples = [ins[0] for ins in batch]
+    #     gts = [ins[1] for ins in batch]
+    #     examples = torch.Tensor(examples).view(len(batch), -1)
+    #     gts = torch.Tensor(gts)
+    #     return examples, gts
 
 
 if __name__ == '__main__':
