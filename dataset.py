@@ -148,6 +148,7 @@ class FloorData(object):
         if show:
             plt.show()
         self.save_figure(fig, 'Step Position.jpg')
+
     def draw_wifi_rssi(self, show=False):
         wifi_rssi = extract_wifi_rssi(self.data)
         wifi_bssids = list(wifi_rssi.keys())
@@ -208,7 +209,7 @@ class UrbanDataset(Dataset):
 
 if __name__ == '__main__':
     floor = FloorData('./output/site1/B1', './data/site1/B1')
-    floor.parse_data()
-    floor.draw_magnetic()
-    floor.draw_way_points()
-#   floor.draw_wifi_rssi()
+    # floor.parse_data()
+    # floor.draw_magnetic()
+    # floor.draw_way_points()
+    # floor.draw_wifi_rssi()
