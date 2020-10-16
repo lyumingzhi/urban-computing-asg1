@@ -184,6 +184,7 @@ class UrbanDataset(Dataset):
             transforms.ToTensor(),
             transforms.Normalize(0.5, 0.5),
         ])
+        self.img = self.trans(self.image)
         self.index = np.arange(len(self))
         if shuffle:
             np.random.shuffle(self.index)
@@ -191,13 +192,14 @@ class UrbanDataset(Dataset):
     def pin_memory(self):
         self.feature = self.feature.pin_memory()
         self.label = self.label.pin_memory()
+        self.img = self.img.pin_memory()
 
     def __len__(self):
         return self.feature.shape[0]
 
     def __getitem__(self, index):
         idx = self.index[index]
-        return self.feature[idx, ...], self.label[idx, ...], self.trans(self.image)
+        return self.feature[idx, ...], self.label[idx, ...], self.img
 
     # def collate_fn(self, batch):
     #     examples = [ins[0] for ins in batch]
