@@ -37,7 +37,7 @@ def train(network, train_dataset):
             loss.backward()
             optimizer.step()
         scheduler.step()
-        print('Epoch %d | loss:', (epoch, loss.item())
+        print('Epoch %d | loss: %.3f' % (epoch, loss.item()))
     print("Finish training, save model")
     torch.save(network.state_dict(), "urban.%d.%.3f.pth" % (epoch, loss.item()))
 
