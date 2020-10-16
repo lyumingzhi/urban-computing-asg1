@@ -72,7 +72,7 @@ class FloorData(object):
                 example[pos][1 + len(wifi_rssi.keys()) + 
                              list(ibeacon_rssi.keys()).index(ibeacon_id)] = rssi[0]
 
-        # Normlization
+        # Normalization
         self.example = example
         self.gt = np.array(list(example.keys()))
         self.feature = np.array(list(example.values()))
