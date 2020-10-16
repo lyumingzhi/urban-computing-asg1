@@ -28,7 +28,7 @@ def train(network, train_dataset, test_dataset):
     scheduler = torch.optim.lr_scheduler.StepLR(optimizer, step_size=3, gamma=0.5)
     criterion = torch.nn.MSELoss()
     # exit()
-    for epoch in range(50):
+    for epoch in range(100):
         epoch_iterator = tqdm(train_data_loader, desc='Interation', disable=False)
         network.train()
         loss_sum = 0.0
