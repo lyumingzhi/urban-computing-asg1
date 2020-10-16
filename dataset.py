@@ -13,6 +13,9 @@ from torchvision import transforms
 
 from utils import *
 
+device = 'cuda' if torch.cuda.is_initialized() else 'cpu'
+torch.device(device)
+
 
 class FloorData(object):
     """Class represents one floor.

@@ -9,6 +9,10 @@ from dataset import FloorData, UrbanDataset
 from network import MLP
 from utils import visualize_heatmap
 
+device = 'cuda' if torch.cuda.is_initialized() else 'cpu'
+torch.device(device)
+
+
 def init_weights(m):
     if type(m) == nn.Linear:
         torch.nn.init.xavier_uniform(m.weight)
@@ -17,7 +21,6 @@ def init_weights(m):
  
 
 def train(network, train_dataset, test_dataset):
-    device = 'cuda' if torch.cuda.is_initialized() else 'cpu'
     network.apply(init_weights)
     network.to(device=device)
     sampler = RandomSampler(train_dataset)
@@ -30,7 +33,7 @@ def train(network, train_dataset, test_dataset):
     optimizer = torch.optim.SGD(network.parameters(), lr=0.01,
                                 momentum=0.9, weight_decay=1e-4)
     scheduler = torch.optim.lr_scheduler.StepLR(optimizer, step_size=3, gamma=0.5)
-    criterion = torch.nn.MSELoss()
+    criterion = torch.nn.MSELoss().to(device)
     avg_loss = 0.0
     # exit()
     for epoch in range(100):
