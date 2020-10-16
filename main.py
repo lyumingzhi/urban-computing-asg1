@@ -46,7 +46,6 @@ def train(network, train_dataset, test_dataset):
             loss_sum += loss.detach().cpu().item()
             count += 1
 
-            print(loss_sum)
         scheduler.step()
         print('[Train] Epoch %d | loss: %.3f' % (epoch, loss_sum / count))
 
