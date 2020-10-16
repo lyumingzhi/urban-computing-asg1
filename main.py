@@ -21,7 +21,8 @@ def train(network, train_dataset):
                                    sampler=sampler,
                                    batch_size=16,
                                    collate_fn=train_dataset.collate_fn)
-    optimizer = torch.optim.SGD(network.parameters(), lr=0.001)
+    optimizer = torch.optim.SGD(network.parameters(), lr=0.001,
+                                momentum=0.9, weight_decay=1e-4)
     scheduler = torch.optim.lr_scheduler.StepLR(optimizer, step_size=3, gamma=0.5)
     criterion = torch.nn.MSELoss()
     # exit()
@@ -36,7 +37,9 @@ def train(network, train_dataset):
             loss.backward()
             optimizer.step()
         scheduler.step()
-        print('loss:', loss.item())
+        print('Epoch %d | loss:', (epoch, loss.item())
+    print("Finish training, save model")
+    torch.save(network.state_dict(), "urban.%d.%.3f.pth" % (epoch, loss.item()))
 
 
 def main():
