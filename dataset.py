@@ -4,9 +4,12 @@ import logging
 import os
 import random
 from collections import OrderedDict
+from PIL import Image
 
 import torch
 from torch.utils.data import Dataset
+import torchvision
+from torchvision import transforms
 
 from utils import *
 
@@ -158,6 +161,12 @@ class UrbanDataset(Dataset):
             return array
         self.feature = _map(self.feature)
         self.label = _map(self.label)
+        self.image = Image.open(ds.floor_plan_filename).convert('RGB')
+        self.trans = torchvision.transforms.Compose([
+            transforms.Resize((128, 128)),
+            transforms.ToTensor(),
+            transforms.Normalize(0.5, 0.5),
+        ])
         self.index = np.arange(len(self))
         if shuffle:
             np.random.shuffle(self.index)
@@ -171,7 +180,7 @@ class UrbanDataset(Dataset):
 
     def __getitem__(self, index):
         idx = self.index[index]
-        return self.feature[idx, ...], self.label[idx, ...]
+        return self.feature[idx, ...], self.label[idx, ...], self.trans(self.image)
 
     # def collate_fn(self, batch):
     #     examples = [ins[0] for ins in batch]
@@ -183,7 +192,7 @@ class UrbanDataset(Dataset):
 
 if __name__ == '__main__':
     floor = FloorData('./output/site1/B1', './data/site1/B1')
-#   floor.parse_data()
-#   floor.draw_magnetic()
-#   floor.draw_way_points()
+    floor.parse_data()
+    floor.draw_magnetic()
+    floor.draw_way_points()
 #   floor.draw_wifi_rssi()
