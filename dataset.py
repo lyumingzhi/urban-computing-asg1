@@ -3,6 +3,7 @@ import json
 import logging
 import os
 import random
+from collections import OrderedDict
 
 import torch
 
@@ -82,7 +83,7 @@ class FloorData(object):
         #     print('can not find it')
         #     exit()
         # exit()
-        example = {}
+        example = OrderedDict()
         for pos in self.data.keys():
             example[pos] = np.zeros((1 + len(list(wifi_rssi.keys())) + len(list(ibeacon_rssi.keys())),))
 
@@ -132,6 +133,13 @@ class FloorData(object):
         # print(len(example[list(example.keys())[0]]),len(example[list(example.keys())[1]]),len(example[list(example.keys())[2]]))
         # exit()
         self.gt = np.array(list(example.keys()))
+        self.feature = np.array(list(example.values()))
+        self.feature_max = self.feature.max(axis=0, keepdims=True)
+        self.feature_min = self.feature.min(axis=0, keepdims=True)
+        self.gt[:, 0] = self.gt[:, 0] / self.width_meter
+        self.gt[:, 1] = self.gt[:, 1] / self.height_meter
+        self.feature = (self.feature - self.feature_min) / (self.feature_max - self.feature_min)
+
 
     def save_figure(self, fig, name):
         filename = os.path.abspath(os.path.join(
@@ -184,7 +192,9 @@ class FloorData(object):
         return len(list(self.data.keys()))
 
     def __getitem__(self, index):
-        return self.example[list(self.example.keys())[index]],self.gt[index]
+        import pdb; pdb.set_trace()
+        # return self.example[list(self.example.keys())[index]],self.gt[index]
+        return self.feature[index], self.gt[index]
 
     def collate_fn(self, batch):
         examples = [ins[0] for ins in batch]

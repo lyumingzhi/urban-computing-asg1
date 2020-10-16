@@ -5,25 +5,32 @@ from tqdm import tqdm
 from dataset import FloorData
 from network import MLP
 
+def init_weights(m):
+    if type(m) == nn.Linear:
+        torch.nn.init.xavier_uniform(m.weight)
+        if m.bias is not None:
+            m.bias.data.fill_(0.01)
+ 
 
 def train(network, train_dataset):
+    network.apply(init_weights)
+    network.train()
     sampler = RandomSampler(train_dataset)
     train_data_loader = DataLoader(train_dataset,
                                    sampler=sampler,
-                                   batch_size=10,
+                                   batch_size=16,
                                    collate_fn=train_dataset.collate_fn)
-    optimizer = torch.optim.SGD(network.parameters(), lr=0.01)
-    scheduler = torch.optim.lr_scheduler.StepLR(optimizer, step_size=5, gamma=0.1)
+    optimizer = torch.optim.SGD(network.parameters(), lr=0.001)
+    scheduler = torch.optim.lr_scheduler.StepLR(optimizer, step_size=3, gamma=0.5)
     criterion = torch.nn.MSELoss()
     # exit()
-    for epoch in range(10):
+    for epoch in range(50):
         epoch_iterator = tqdm(train_data_loader, desc='Interation', disable=False)
         for step, batch in enumerate(epoch_iterator):
-            network.train()
             example, label = batch[0], batch[1]
-            example.requires_grad_()
             preds = network(example)
             optimizer.zero_grad()
+            network.zero_grad()
             loss = criterion(preds, label)
             loss.backward()
             optimizer.step()
@@ -39,8 +46,7 @@ def main():
     # print(dataset.example[list(dataset.example.keys())[0]].shape,dataset.gt.shape[1])
     # print(dataset.gt)
     net = MLP(dataset.example[list(dataset.example.keys())[0]].shape[0],
-              128, 128, dataset.gt.shape[1])
+              256, 128, dataset.gt.shape[1])
     train(net, dataset)
-
 
 main()

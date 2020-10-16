@@ -10,11 +10,11 @@ class MLP(nn.Module):
                                    nn.ReLU(),
                                    nn.Linear(h2size, h2size),
                                    nn.ReLU(),
-                                   # nn.Linear(h2size, h2size),
-                                   # nn.ReLU(),
-                                   # nn.Linear(h2size, h2size),
-                                   # nn.ReLU(),
-                                   nn.Linear(h2size, outputsize))
+                                   nn.Linear(h2size, 64),
+                                   nn.ReLU(),
+                                   nn.Linear(64, 32),
+                                   nn.ReLU(),
+                                   nn.Linear(32, outputsize))
 
     def forward(self, x):
         return self.model(x)
