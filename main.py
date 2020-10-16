@@ -17,8 +17,9 @@ def init_weights(m):
  
 
 def train(network, train_dataset, test_dataset):
+    device = 'cuda' if torch.cuda.is_initialized() else 'cpu'
     network.apply(init_weights)
-    network.train()
+    network.to(device=device)
     sampler = RandomSampler(train_dataset)
     train_data_loader = DataLoader(train_dataset,
                                    sampler=sampler,
@@ -38,8 +39,8 @@ def train(network, train_dataset, test_dataset):
         loss_sum = 0.0
         count = 0
         for step, batch in enumerate(epoch_iterator):
-            example, label = batch[0], batch[1]
-            preds = network(example)
+            example, label, image = map(lambda x: x.to(device), batch)
+            preds = network(example, image)
             optimizer.zero_grad()
             network.zero_grad()
             loss = criterion(preds, label)
@@ -48,6 +49,7 @@ def train(network, train_dataset, test_dataset):
 
             loss_sum += loss.detach().cpu().item()
             count += 1
+
         scheduler.step()
         print('[Train] Epoch %d | loss: %.3f' % (epoch, loss_sum / count))
 
