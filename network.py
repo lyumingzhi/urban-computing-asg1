@@ -12,7 +12,9 @@ class MLP(nn.Module):
                                    nn.ReLU(),
                                    nn.Linear(h2size, h2size),
                                    nn.ReLU())
-        self.head = nn.Sequential(nn.Linear(h2size + 1024, h2size),
+        self.head = nn.Sequential(nn.Linear(h2size + 1024, 512),
+                                  nn.ReLU(),
+                                  nn.Linear(512, h2size),
                                   nn.ReLU(),
                                   nn.Linear(h2size, 64),
                                   nn.ReLU(),

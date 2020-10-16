@@ -54,8 +54,8 @@ def train(network, train_dataset, test_dataset):
         loss_sum = 0.0
         count = 0
         for step, batch in enumerate(test_iter):
-            example, label = batch[0], batch[1]
-            preds = network(example)
+            example, label, image = map(lambda x: x.to(device), batch)
+            preds = network(example, image)
             loss = criterion(preds, label)
 
             loss_sum += loss.detach().cpu().item()
