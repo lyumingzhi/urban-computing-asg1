@@ -72,7 +72,7 @@ class FloorData(object):
                 example[pos][1 + len(wifi_rssi.keys()) + 
                              list(ibeacon_rssi.keys()).index(ibeacon_id)] = rssi[0]
 
-        # Normlization
+        # Normalization
         self.example = example
         self.gt = np.array(list(example.keys()))
         self.feature = np.array(list(example.values()))
@@ -146,12 +146,15 @@ class FloorData(object):
 
 
 class UrbanDataset(Dataset):
-    def __init__(self, ds, is_training=True, shuffle=True):
+    def __init__(self, ds, type='train', shuffle=True):
         self.ds = ds
-        if is_training:
+        if type == 'train':
             self.feature, self.label = self.ds.get_train()
-        else:
+        elif type == 'test':
             self.feature, self.label = self.ds.get_test()
+        elif type == 'all':
+            self.feature = self.ds.feature
+            self.label = self.ds.gt
         def _map(array):
             if not isinstance(array, torch.Tensor):
                 array = torch.from_numpy(array).float()
