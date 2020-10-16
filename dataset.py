@@ -192,7 +192,6 @@ class FloorData(object):
         return len(list(self.data.keys()))
 
     def __getitem__(self, index):
-        import pdb; pdb.set_trace()
         # return self.example[list(self.example.keys())[index]],self.gt[index]
         return self.feature[index], self.gt[index]
 
