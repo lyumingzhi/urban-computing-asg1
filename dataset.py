@@ -167,6 +167,19 @@ class FloorData(object):
             plt.show()
         self.save_figure(fig, 'WayPoints.jpg')
 
+    def draw_step_position(self,show=False):
+        fig, ax = plt.subplots()
+        step_positions=[]
+        for pos in example.keys():
+            step_positions.append(pos)
+        for pos in step_positions:
+            ax.scatter(pos[ 0], pos[1], linewidths=0.5)
+        ax.title.set_text('Step Position')
+        im = plt.imread(self.floor_plan_filename)
+        ax.imshow(im, extent=[0, self.width_meter, 0, self.height_meter])
+        if show:
+            plt.show()
+        self.save_figure(fig, 'Step Position.jpg')
     def draw_wifi_rssi(self, show=False):
         wifi_rssi = extract_wifi_rssi(self.data)
         wifi_bssids = list(wifi_rssi.keys())
