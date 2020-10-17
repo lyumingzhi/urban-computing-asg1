@@ -13,7 +13,7 @@ from torchvision import transforms
 
 from utils import *
 
-device = 'cuda' if torch.cuda.is_initialized() else 'cpu'
+device = 'cuda' #if torch.cuda.is_initialized() else 'cpu'
 torch.device(device)
 
 
@@ -141,7 +141,7 @@ class FloorData(object):
     def draw_step_position(self,show=False):
         fig, ax = plt.subplots()
         step_positions=[]
-        for pos in example.keys():
+        for pos in self.example.keys():
             step_positions.append(pos)
         for pos in step_positions:
             ax.scatter(pos[ 0], pos[1], linewidths=0.5)
@@ -200,9 +200,18 @@ class UrbanDataset(Dataset):
     def __len__(self):
         return self.feature.shape[0]
 
+    # def __getitem__(self, index):
+    #     idx = self.index[index]
+    #     return self.feature[idx, ...], self.label[idx, ...], self.img
+    #
     def __getitem__(self, index):
         idx = self.index[index]
-        return self.feature[idx, ...], self.label[idx, ...], self.img
+        feature = self.feature[idx, ...]
+        img = self.img
+        if True:
+            feature += (1e-3 * torch.randn(feature.size()).float().to(feature.device))
+            img += (1e-3 * torch.randn(img.size()).float().to(img.device))
+        return feature, self.label[idx, ...], img
 
     # def collate_fn(self, batch):
     #     examples = [ins[0] for ins in batch]

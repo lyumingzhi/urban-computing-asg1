@@ -2,7 +2,7 @@ import torch.nn as nn
 from torchvision.models import resnet
 import torch
 
-device = 'cuda' if torch.cuda.is_initialized() else 'cpu'
+device = 'cuda' #if torch.cuda.is_initialized() else 'cpu'
 torch.device(device)
 
 
