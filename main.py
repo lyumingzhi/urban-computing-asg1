@@ -6,7 +6,7 @@ from torch.utils.data import DataLoader, RandomSampler
 from tqdm import tqdm
 
 from dataset import FloorData, UrbanDataset
-from network import MLP
+from network import MLP, MLP_without_CNN
 from utils import visualize_heatmap
 
 device = 'cuda' #if torch.cuda.is_initialized() else 'cpu'
@@ -137,7 +137,7 @@ def main():
     test_ds = UrbanDataset(dataset, type='test', shuffle=False)
     all_ds = UrbanDataset(dataset, type='all', shuffle=False)
 
-    net = MLP(dataset.feature_length, 256, 128, dataset.output_length)
+    net = MLP_without_CNN(dataset.feature_length, 256, 128, dataset.output_length)
     net = train(net, train_ds, test_ds)
     # net.load_state_dict(torch.load('urban.99.0.018.pth'))
 

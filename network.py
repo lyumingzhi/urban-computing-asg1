@@ -48,3 +48,35 @@ class MLP(nn.Module):
 
         return self.head(out)
 
+class MLP_without_CNN(nn.Module):
+    def __init__(self, inputsize, h1size, h2size, outputsize):
+        super(MLP, self).__init__()
+        self.model = nn.Sequential(nn.Linear(inputsize, h1size),
+                                   nn.ReLU(),
+                                   nn.Linear(h1size, h2size),
+                                   nn.ReLU(),
+                                   nn.Linear(h2size, h2size),
+                                   nn.ReLU())
+        self.head = nn.Sequential(nn.Linear(h2size + 28*28, 512),
+                                  nn.ReLU(),
+                                  nn.Linear(512, h2size),
+                                  nn.ReLU(),
+                                  nn.Linear(h2size, 64),
+                                  nn.ReLU(),
+                                  nn.Linear(64, 32),
+                                  nn.ReLU(),
+                                  nn.Linear(32, outputsize))
+        # self.backbone = resnet.resnet18(pretrained=True, progress=True)
+        # self.backbone.layer4 = nn.Sequential()
+        # self.reduce_chn = nn.Sequential(nn.Conv2d(256, 16, kernel_size=1),
+        #                                 nn.BatchNorm2d(16),
+        #                                 nn.ReLU())
+
+
+    def forward(self, feature, image):
+        x=image.view(-1,image.size()[1]*image.size()[2])
+        f = self.model(feature)
+        out = torch.cat([f, x], axis=-1)
+
+        return self.head(out)
+
