@@ -38,8 +38,11 @@ def main():
     # floor.draw_way_points()
     # print(dataset.example[list(dataset.example.keys())[0]].shape,dataset.gt.shape[1])
     # print(dataset.gt)
+    # print(dataset.example[list(dataset.example.keys())[0]].shape[0])
+    # exit()
     net = MLP(dataset.example[list(dataset.example.keys())[0]].shape[0],
               128, 128, dataset.gt.shape[1])
+
     train(net, dataset)
 
 

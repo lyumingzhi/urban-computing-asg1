@@ -68,7 +68,7 @@ class FloorData(object):
         #     magnet_pos.append(pos)
         # magnet_pos=sorted(magnet_pos,key=lambda t:t[0])
 
-        # print(len(ibeacon_pos),len(wifi_pos),len(magnet_pos),len(self.data.keys()))
+        print(len(ibeacon_pos),len(wifi_pos),len(magnet_pos),len(self.data.keys()))
         # for pos1,pos2,pos3 in zip(ibeacon_pos,wifi_pos,magnet_pos):
         #   print(pos1,pos2,pos3)
         # exit()
@@ -128,6 +128,7 @@ class FloorData(object):
         #   example[pos]=np.append(np.array(example[pos]),np.array(position_wifi_rssi[pos]))
         #   example[pos]=np.append(np.array(example[pos]),np.array(position_ibeacon_rssi[pos]))
         self.example = example
+        
         # print(example[list(example.keys())[1]])
         # print(len(example[list(example.keys())[0]]),len(example[list(example.keys())[1]]),len(example[list(example.keys())[2]]))
         # exit()
