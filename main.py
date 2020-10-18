@@ -140,7 +140,7 @@ def main():
     test_ds = UrbanDataset(dataset, type='test', shuffle=False)
     all_ds = UrbanDataset(dataset, type='all', shuffle=False)
 
-    net = MLP_without_CNN(dataset.feature_length, 256, 128, dataset.output_length)
+    net = MLP_without_CNN(dataset.feature_length, 512, 4096, dataset.output_length)
     net = train(net, train_ds, test_ds)
     # net.load_state_dict(torch.load('urban.99.0.018.pth'))
 

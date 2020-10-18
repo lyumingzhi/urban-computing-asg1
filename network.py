@@ -57,9 +57,9 @@ class MLP_without_CNN(nn.Module):
                                    nn.ReLU(),
                                    nn.Linear(h2size, h2size),
                                    nn.ReLU())
-        self.head = nn.Sequential(nn.Linear(inputsize + 3*28*28, 512),
+        self.head = nn.Sequential(nn.Linear(inputsize + 3*28*28, h1size),
                                   nn.ReLU(),
-                                  nn.Linear(512, h2size),
+                                  nn.Linear(h1size, h2size),
                                   nn.ReLU(),
                                   nn.Linear(h2size, 64),
                                   nn.ReLU(),
@@ -89,7 +89,7 @@ class MLP_without_CNN(nn.Module):
             print('nan!')
             exit(1)
         preds=self.head(out)
-        print(out[63],preds[63])
+#         print(out[63],preds[63])
         
         return preds
 
