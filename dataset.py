@@ -183,7 +183,7 @@ class UrbanDataset(Dataset):
         self.label = _map(self.label)
         self.image = Image.open(ds.floor_plan_filename).convert('RGB')
         self.trans = torchvision.transforms.Compose([
-            transforms.Resize((128, 128)),
+            transforms.Resize((28, 28)),
             transforms.ToTensor(),
             transforms.Normalize(0.5, 0.5),
         ])

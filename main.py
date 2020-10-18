@@ -50,6 +50,9 @@ def train(network, train_dataset, test_dataset):
             optimizer.zero_grad()
             network.zero_grad()
             loss = criterion(preds, label)
+            print(loss)
+            if torch.isnan(loss):
+                exit()
             loss.backward()
             optimizer.step()
 
